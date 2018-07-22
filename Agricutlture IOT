@@ -1,0 +1,214 @@
+/**************************************************************
+ * Blynk is a platform with iOS and Android apps to control
+ * Arduino, Raspberry Pi and the likes over the Internet.
+ * You can easily build graphic interfaces for all your
+ * projects by simply dragging and dropping widgets.
+ *
+ *   Downloads, docs, tutorials: http://www.blynk.cc
+ *   Blynk community:            http://community.blynk.cc
+ *   Social networks:            http://www.fb.com/blynkapp
+ *                               http://twitter.com/blynk_app
+ *
+ * Blynk library is licensed under MIT license
+ * This example code is in public domain.
+ *
+ **************************************************************
+ * This example runs directly on ESP8266 chip.
+ *
+ * Note: This requires ESP8266 support package:
+ *   https://github.com/esp8266/Arduino
+ *
+ * Please be sure to select the right ESP8266 module
+ * in the Tools -> Board menu!
+ *
+ * Change WiFi ssid, pass, and Blynk auth token to run :)
+ *
+ **************************************************************/
+
+#define BLYNK_PRINT Serial    // Comment this out to disable prints and save space
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+// You should get Auth Token in the Blynk App.
+// Go to the Project Settings (nut icon).
+char auth[] = "488ad3e9fca2421495ccae30618dbe2c";
+
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "TL Logics";
+char pass[] = "TecHA973920";
+int buttonState,buttonState1=0,buttonState2;
+const int buttonPin = 5; //IR D1
+const int  buzzer= 4;//BUZZER D2
+const int  motor= 0;//pump D3
+const int  wheat= 2;//wheat D4
+const int  rice= 12;//rice D5
+int lastButtonState = 0;     // previous state of the button
+WidgetLED l1(V3);
+WidgetLCD lcdblink(1);
+WidgetLCD lcdblink1(4);
+void setup()
+{
+  Serial.begin(9600);
+  Blynk.begin(auth, ssid, pass);
+  pinMode(buttonPin,INPUT);//ir sensor
+ pinMode(buzzer,OUTPUT);//BUZZER 
+  pinMode(motor,OUTPUT);//motor
+  pinMode(wheat,INPUT);//wheat
+   pinMode(rice,INPUT);//rice
+  
+}
+
+void loop() {
+  // read the input on analog pin 0:
+  Blynk.run();
+  while(1)
+  {
+ 
+buttonState1=digitalRead(wheat);
+
+//buttonState2=digitalRead(rice);
+if(buttonState1==1)
+{int sensorValue = analogRead(A0);
+  sensorValue=sensorValue/100;
+if(sensorValue<=9)
+{if(buttonState1==1)
+{
+  lcdblink1.clear(); //Use it to clear the LCD Widge
+  lcdblink1.print(0, 0,sensorValue); 
+   l1.on();
+    Blynk.setProperty(V3,"color","#0c990c");//green
+digitalWrite(motor,LOW);
+  lcdblink.clear(); //Use it to clear the LCD Widget
+   buttonState = digitalRead(buttonPin);
+   if(buttonState==0)
+{
+ // l1.on();
+//lcdblink.clear(); //Use it to clear the LCD Widget
+lcdblink.print(0, 0, "THEFT DETECTED"); 
+digitalWrite(buzzer,HIGH);
+
+}
+else
+{
+digitalWrite(buzzer,LOW);
+}
+}
+}
+else
+{
+    l1.on();
+     Blynk.setProperty(V3,"color","#e80606");//red
+
+while(sensorValue>=6)
+{ 
+
+     int sensorValue = analogRead(A0);
+     sensorValue=sensorValue/100;
+      l1.on();
+     Blynk.setProperty(V3,"color","#e80606");//red
+     digitalWrite(motor,HIGH);
+     Serial.println(sensorValue);
+     lcdblink1.clear(); //Use it to clear the LCD Widge
+  lcdblink1.print(0, 0,sensorValue);
+       if(sensorValue<6)
+       { l1.on();
+          digitalWrite(motor,LOW);
+          Blynk.setProperty(V3,"color","#0c990c");//green
+       break;
+       }
+  
+  lcdblink.clear(); //Use it to clear the LCD Widget
+   buttonState = digitalRead(buttonPin);
+if(buttonState==0)
+{
+
+lcdblink.print(0, 0, "THEFT DETECTED"); 
+digitalWrite(buzzer,HIGH);
+delay(500);
+}
+else
+{
+digitalWrite(buzzer,LOW);
+}
+
+        }
+       
+       }
+}
+  
+
+
+
+
+else if(buttonState1==0)
+{
+int sensorValue = analogRead(A0);
+  sensorValue=sensorValue/100;
+if(sensorValue<=9)
+{
+   l1.on();
+    Blynk.setProperty(V3,"color","#0c990c");//green
+digitalWrite(motor,LOW);
+  lcdblink.clear(); //Use it to clear the LCD Widget
+   buttonState = digitalRead(buttonPin);
+   if(buttonState==0)
+{
+ // l1.on();
+//lcdblink.clear(); //Use it to clear the LCD Widget
+lcdblink.print(0, 0, "THEFT DETECTED"); 
+digitalWrite(buzzer,HIGH);
+
+}
+else
+{
+digitalWrite(buzzer,LOW);
+}
+}
+else
+{
+    l1.on();
+     Blynk.setProperty(V3,"color","#e80606");//red
+
+while(sensorValue>=3)
+{ 
+ lcdblink.clear(); //Use it to clear the LCD Widget
+   buttonState = digitalRead(buttonPin);
+if(buttonState==0)
+{
+
+lcdblink.print(0, 0, "THEFT DETECTED"); 
+digitalWrite(buzzer,HIGH);
+delay(500);
+}
+else
+{
+digitalWrite(buzzer,LOW);
+}
+
+     int sensorValue = analogRead(A0);
+     sensorValue=sensorValue/100;
+      l1.on();
+     Blynk.setProperty(V3,"color","#e80606");//red
+     digitalWrite(motor,HIGH);
+     Serial.println(sensorValue);
+     lcdblink1.clear(); //Use it to clear the LCD Widge
+  lcdblink1.print(0, 0,sensorValue);
+       if(sensorValue<=3)
+       { l1.on();
+          digitalWrite(motor,LOW);
+          Blynk.setProperty(V3,"color","#0c990c");//green
+        break;
+        
+       }
+  
+ 
+        }
+        
+       }
+}
+
+
+  }
+
+}
